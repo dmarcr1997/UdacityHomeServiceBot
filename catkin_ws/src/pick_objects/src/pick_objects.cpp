@@ -7,14 +7,14 @@
 // Define a client for to send goal requests to the move_base server through a SimpleActionClient
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 static int calls = 0;
-void sendGoal(const std_msgs::Float32MultiArray::ConstPtr[]& array)
+void sendGoal(const std_msgs::Float32MultiArray::ConstPtr& array)
 {
   std::string location = "";
   if(calls < 1)
     location = "arrived_at_pickup";
   else
     location = "arrived_at_dropoff";
-    
+  calls += 1; 
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("move_base", true);
 
@@ -33,7 +33,7 @@ void sendGoal(const std_msgs::Float32MultiArray::ConstPtr[]& array)
   
   goal.target_pose.pose.position.x = array->data[0];
   goal.target_pose.pose.position.y = array->data[1];
-  goal.target_pose.pose.position.z = 0;
+  goal.target_pose.pose.orientation.w = 1.0;
   
   ROS_INFO("Sending goal");
   ac.sendGoal(goal);
@@ -49,6 +49,7 @@ void sendGoal(const std_msgs::Float32MultiArray::ConstPtr[]& array)
   	sleep(5);
   }
   else{
+   	ROS_INFO_STREAM("DATA:" << goal.target_pose.pose.position);
     ROS_INFO("The base failed to move forward 1 meter for some reason");
   	ros::param::set("/pose", "error");
   }
@@ -58,7 +59,7 @@ void sendGoal(const std_msgs::Float32MultiArray::ConstPtr[]& array)
 int main(int argc, char** argv){
   // Initialize the simple_navigation_goals node
   ros::init(argc, argv, "pick_objects");
-  
+  ros::NodeHandle n;
   // Define a position and orientation for the robot to reach
   ros::Subscriber sub = n.subscribe("marker_location", 1000, sendGoal);
   ros::spin();

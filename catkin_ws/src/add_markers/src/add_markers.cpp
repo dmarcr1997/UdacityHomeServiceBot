@@ -11,8 +11,13 @@ int main( int argc, char** argv )
   ros::Publisher marker_location_pub = n.advertise<std_msgs::Float32MultiArray>("marker_location", 1);
 
   uint32_t shape = visualization_msgs::Marker::CUBE;
-  std_msgs::Float32MultiArray pickupLoc({5.0, 2.5});
-  std_msgs::Float32MultiArray dropOffLoc({ -2.0, 2.0 });
+  std_msgs::Float32MultiArray pickupLoc;
+  pickupLoc.data.push_back(2.0);
+  pickupLoc.data.push_back(2.5);
+  
+  std_msgs::Float32MultiArray dropOffLoc;
+  dropOffLoc.data.push_back(-2.0);
+  dropOffLoc.data.push_back(2.0);
   
   while (ros::ok())
   {
@@ -29,7 +34,7 @@ int main( int argc, char** argv )
     marker.action = visualization_msgs::Marker::ADD;
 	
     //Pickup location
-    marker.pose.position.x = 5.0;
+    marker.pose.position.x = 2.0;
     marker.pose.position.y = 2.5;
     marker.pose.position.z = 0;
     marker.pose.orientation.x = 0.0;
@@ -37,9 +42,9 @@ int main( int argc, char** argv )
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
 
-    marker.scale.x = 0.1;
-    marker.scale.y = 0.1;
-    marker.scale.z = 0.1;
+    marker.scale.x = 0.25;
+    marker.scale.y = 0.25;
+    marker.scale.z = 0.25;
 
     marker.color.r = 0.0f;
     marker.color.g = 1.0f;
