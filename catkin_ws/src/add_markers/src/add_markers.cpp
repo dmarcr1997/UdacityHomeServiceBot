@@ -12,12 +12,12 @@ int main( int argc, char** argv )
 
   uint32_t shape = visualization_msgs::Marker::CUBE;
   std_msgs::Float32MultiArray pickupLoc;
-  pickupLoc.data.push_back(2.0);
-  pickupLoc.data.push_back(2.5);
+  pickupLoc.data.push_back(2);
+  pickupLoc.data.push_back(-1.8);
   
   std_msgs::Float32MultiArray dropOffLoc;
-  dropOffLoc.data.push_back(-2.0);
-  dropOffLoc.data.push_back(2.0);
+  dropOffLoc.data.push_back(2.476);
+  dropOffLoc.data.push_back(-3.53);
   
   while (ros::ok())
   {
@@ -34,8 +34,8 @@ int main( int argc, char** argv )
     marker.action = visualization_msgs::Marker::ADD;
 	
     //Pickup location
-    marker.pose.position.x = 2.0;
-    marker.pose.position.y = 2.5;
+    marker.pose.position.x = 2;
+    marker.pose.position.y = -1.8;
     marker.pose.position.z = 0;
     marker.pose.orientation.x = 0.0;
     marker.pose.orientation.y = 0.0;
@@ -78,8 +78,8 @@ int main( int argc, char** argv )
     ROS_INFO("Pub marker to pickup LOC...");
    
     //Drop off location
-    marker.pose.position.x = -2.0;
-    marker.pose.position.y = 2.0;
+    marker.pose.position.x = 2.476;
+    marker.pose.position.y = -3.53;
     marker.pose.position.z = 0;
     marker.pose.orientation.x = 0.0;
     marker.pose.orientation.y = 0.0;
@@ -101,15 +101,10 @@ int main( int argc, char** argv )
         }
         if (robot_pose=="arrived_at_dropoff"){
 
-            // Set the drop-off location
-            marker.pose.position.x = -2.0;
-            marker.pose.position.y = 2.0;
-            marker.pose.position.z = 0;
-            marker.pose.orientation.w = 1.0;
-
             marker.action = visualization_msgs::Marker::ADD;
             marker_pub.publish(marker);
             ROS_INFO("Marker dropped at dropoff");
+          	return 0;
 
         }
         ros::spinOnce();

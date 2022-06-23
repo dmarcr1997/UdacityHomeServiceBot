@@ -36,6 +36,9 @@ void sendGoal(const std_msgs::Float32MultiArray::ConstPtr& array)
   goal.target_pose.pose.orientation.w = 1.0;
   
   ROS_INFO("Sending goal");
+  ROS_INFO_STREAM("X:" << goal.target_pose.pose.position.x);
+  ROS_INFO_STREAM("Y:" << goal.target_pose.pose.position.y);
+  
   ac.sendGoal(goal);
   ros::param::set("/pose", "heading_to_goal");
   
@@ -44,13 +47,13 @@ void sendGoal(const std_msgs::Float32MultiArray::ConstPtr& array)
 
   // Check if the robot reached its goal
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
-    ROS_INFO("Hooray, the base moved 1 meter forward");
+    ROS_INFO("Hooray, robot reached goal");
     ros::param::set("/pose", location);
   	sleep(5);
   }
   else{
    	ROS_INFO_STREAM("DATA:" << goal.target_pose.pose.position);
-    ROS_INFO("The base failed to move forward 1 meter for some reason");
+    ROS_INFO("Robot failed to reach goal");
   	ros::param::set("/pose", "error");
   }
   
