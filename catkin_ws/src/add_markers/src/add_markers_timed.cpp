@@ -1,23 +1,15 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
-#include "std_msgs/Float32MultiArray.h"
+
 
 int main( int argc, char** argv )
 {
-  ros::init(argc, argv, "add_markers");
+  ros::init(argc, argv, "add_markers_timed");
   ros::NodeHandle n;
   ros::Rate r(1);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-  ros::Publisher marker_location_pub = n.advertise<std_msgs::Float32MultiArray>("marker_location", 1);
 
   uint32_t shape = visualization_msgs::Marker::CUBE;
-  std_msgs::Float32MultiArray pickupLoc;
-  pickupLoc.data.push_back(2);
-  pickupLoc.data.push_back(-1.8);
-  
-  std_msgs::Float32MultiArray dropOffLoc;
-  dropOffLoc.data.push_back(2.476);
-  dropOffLoc.data.push_back(-3.53);
   
   while (ros::ok())
   {
@@ -62,13 +54,20 @@ int main( int argc, char** argv )
       ROS_WARN_ONCE("Please create a subscriber to the marker");
       sleep(1);
     }
+    ROS_INFO("Publishing Marker to pickup...");
+    
     marker_pub.publish(marker);
    
-    marker_location_pub.publish(pickupLoc);
-    std::string robot_pose;
-    ros::Rate r(1);
-    ROS_INFO("Pub marker to pickup LOC...");
+   	sleep(5);
+   	
+    ROS_INFO("Hiding Marker...");
+    marker.action = visualization_msgs::Marker::DELETE;
+     marker_pub.publish(marker);
+    sleep(5);
    
+    
+    marker.action = visualization_msgs::Marker::ADD;
+    
     //Drop off location
     marker.pose.position.x = 2.476;
     marker.pose.position.y = -3.53;
@@ -77,31 +76,15 @@ int main( int argc, char** argv )
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
-
+	marker.lifetime = ros::Duration();
+    
+    ROS_INFO("Publishing Marker to dropoff...");
+    marker_pub.publish(marker);
+    marker.action = visualization_msgs::Marker::ADD;
+    
     while(ros::ok()){
-      if (ros::param::get("/pose", robot_pose))
-      {
-
-        if (robot_pose=="arrived_at_pickup"){
-            marker.action = visualization_msgs::Marker::DELETE;
-           
-            marker_pub.publish(marker);
-           	marker_location_pub.publish(dropOffLoc);
-            ROS_INFO("Object picked up by robot");
-
-            sleep(5);
-        }
-        if (robot_pose=="arrived_at_dropoff"){
-
-            marker.action = visualization_msgs::Marker::ADD;
-            marker_pub.publish(marker);
-            ROS_INFO("Marker dropped at dropoff");
-          	return 0;
-
-        }
-        ros::spinOnce();
-   	 }
-     r.sleep();
+     ros::spinOnce();
   	}
+    r.sleep();
   }
 }
